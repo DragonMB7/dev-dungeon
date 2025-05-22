@@ -1,6 +1,11 @@
 package item.effects;
 
+import contrib.components.HealthComponent;
+import contrib.utils.components.health.Damage;
+import contrib.utils.components.health.DamageType;
 import core.Entity;
+import core.components.VelocityComponent;
+import core.utils.components.MissingComponentException;
 import systems.EventScheduler;
 
 /**
@@ -36,6 +41,22 @@ public class SpeedEffect {
    * @param target The entity to which the speed effect will be applied.
    */
   public void applySpeedEffect(Entity target) {
-    throw new UnsupportedOperationException("Method not implemented.");
+
+      //holt das VelocityComponent von target
+      VelocityComponent vC = target.fetch(VelocityComponent.class).get();
+      //aktuelle Geschwindigkeit holen
+      float x = vC.xVelocity();
+      float y = vC.yVelocity();
+
+      //neuen Geschwindigkeit entsprechend dem Geschwindigkeitsmodifikator wird dem Target angehängt
+      target.add(new VelocityComponent(x*speedIncrease,y*speedIncrease));
+
+      //nach der duration wird die Geschwindigkeit des Targets wieder zurueckgesetzt
+      EVENT_SCHEDULER.scheduleAction(
+          () -> target.add(new VelocityComponent(x,y))
+          ,1000L * duration);
+
+
+
   }
 }
